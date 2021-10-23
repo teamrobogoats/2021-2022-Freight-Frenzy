@@ -1,0 +1,57 @@
+package org.firstinspires.ftc.teamcode;
+
+
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+public class Hardware {
+
+    public DcMotor rightBack = null;
+    public DcMotor rightFront = null;
+    public DcMotor leftFront = null;
+    public DcMotor leftBack = null;
+    //private DcMotor wheel = null;
+
+    HardwareMap hardwareMap = null;
+
+
+    public Hardware() {
+
+    }
+
+    public void init(HardwareMap elmoHardwareMap) {
+
+        hardwareMap = elmoHardwareMap;
+
+        //Initialize all DC Motors
+        rightBack = hardwareMap.dcMotor.get("rightBack");
+        leftFront = hardwareMap.dcMotor.get("leftFront");
+        rightFront = hardwareMap.dcMotor.get("rightFront");
+        leftBack = hardwareMap.dcMotor.get("leftBack");
+        //wheel = hardwareMap.dcMotor.get("wheel");
+
+
+        leftFront.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
+        //wheel.setDirection(DcMotor.Direction.FORWARD);
+
+        //Set all DC Motors power to ZERO
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+        //wheel.setPower(0);
+
+
+        //Set all motors to run without encoders
+        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+
+    }
+}
