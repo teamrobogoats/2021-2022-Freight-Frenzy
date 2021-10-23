@@ -1,0 +1,282 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
+@TeleOp(name = "TeleOps", group = "")
+public class TeleOps extends LinearOpMode {
+
+    public DcMotor leftFront;
+    public DcMotor rightFront;
+    public DcMotor leftBack;
+    public DcMotor rightBack;
+    //private DcMotor wheel;
+
+
+    //private DcMotor intake;
+    //public DcMotor carousel;
+    ////public DcMotor shooter;
+    //public DcMotor wobble;
+    DigitalChannel digitalTouch;
+    DigitalChannel digitalTouch2;
+    //TouchSensor touch1;
+    //TouchSensor touch2;
+
+
+    //private Servo claw;
+
+    private final double robotSpeedCarousel = -0.75;
+    private final float robotSpeedRamp = 0.36f;
+    private final float robotSpeedLowGoal = 0.28f;
+    private final float robotSpeedClaw = 0.15f;
+    private final float robotSpeedArm = 0.14f;
+
+    double  MIN_POSITION = 0, MAX_POSITION = 1;
+
+
+
+    /**
+     * This function is executed when this Op Mode is selected from the Driver Station.
+     */
+    @Override
+    public void runOpMode() {
+        float speed = 0.0f;
+        double turnspeed = 0.0f;
+        //digitalTouch = hardwareMap.get(DigitalChannel.class, "touch1");
+        //digitalTouch2 = hardwareMap.get(DigitalChannel.class, "touch2");
+        leftFront = hardwareMap.dcMotor.get("leftFront");
+        rightFront = hardwareMap.dcMotor.get("rightFront");
+        leftBack = hardwareMap.dcMotor.get("leftBack");
+        rightBack = hardwareMap.dcMotor.get("rightBack");
+        //wheel = hardwareMap.dcMotor.get("wheel");
+
+        //wobble = hardwareMap.dcMotor.get("wobble");
+        //intake = hardwareMap.dcMotor.get("intake");
+        //shooter = hardwareMap.dcMotor.get("shooter");
+        //DcMotorEx shooter = hardwareMap.get(DcMotorEx.class, "shooter");
+        //shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //carousel = hardwareMap.dcMotor.get("carousel");
+        //claw = hardwareMap.servo.get("claw");
+
+        //touch1 = hardwareMap.get(TouchSensor.class, "touch1");
+        //touch2 = hardwareMap.get(TouchSensor.class, "touch2");
+        //shooter.setDirection(DcMotor.Direction.REVERSE);
+        //digitalTouch.setMode(DigitalChannel.Mode.INPUT);
+        // Put initialization blocks here.
+        waitForStart();
+        if (opModeIsActive()) {
+            speed = 0.0f;
+            leftFront.setPower(speed);
+            leftBack.setPower(-speed);
+            rightFront.setPower(speed);
+            rightBack.setPower(speed);
+            //wheel.setPower(-speed);
+            // Put run blocks here.
+            while (opModeIsActive()) {
+
+
+                //Right Trigger makes robot go forward
+
+                if (gamepad1.left_stick_y != 0) {
+                    leftFront.setPower(gamepad1.left_stick_y);
+                    leftBack.setPower(gamepad1.left_stick_y);
+                    rightFront.setPower(-gamepad1.left_stick_y);
+                    rightBack.setPower(-gamepad1.left_stick_y);
+                    telemetry.addData("Moving", "%f", gamepad1.left_stick_y);
+                    telemetry.update();
+                }
+                else {
+                    leftFront.setPower(0);
+                    leftBack.setPower(0);
+                    rightFront.setPower(0);
+                    rightBack.setPower(0);
+                }
+
+                //Dpad right makes robot shuffle left
+                if (gamepad1.dpad_left) {
+                    leftFront.setPower(1);
+                    leftBack.setPower(-1);
+                    rightFront.setPower(1);
+                    rightBack.setPower(-1);
+                    telemetry.addData("Shuffling", "left");
+                    telemetry.update();
+                }
+                else {
+                    leftFront.setPower(0);
+                    leftBack.setPower(0);
+                    rightFront.setPower(-0);
+                    rightBack.setPower(-0);
+                }
+                //Dpad left makes robot shuffle right
+                if (gamepad1.dpad_right) {
+                    leftFront.setPower(-1);
+                    leftBack.setPower(1);
+                    rightFront.setPower(-1);
+                    rightBack.setPower(1);
+                    telemetry.addData("Shuffling", "right");
+                    telemetry.update();
+                }
+                else {
+                    leftFront.setPower(0);
+                    leftBack.setPower(0);
+                    rightFront.setPower(0);
+                    rightBack.setPower(0);
+                }
+
+                //Left Joystick makes robot turn
+                if (gamepad1.left_stick_x != 0) {
+                    turnspeed = gamepad1.left_stick_x;
+                    leftFront.setPower(-turnspeed);
+                    leftBack.setPower(-turnspeed);
+                    rightFront.setPower(-turnspeed);
+                    rightBack.setPower(-turnspeed);
+                    telemetry.addData("Turning", "left or right");
+                    telemetry.update();
+                }
+                else {
+                    leftFront.setPower(0);
+                    leftBack.setPower(0);
+                    rightFront.setPower(0);
+                    rightBack.setPower(0);
+                }
+
+
+                //Grip and Lift Wobble Goal
+                /*
+                telemetry.update();
+                if (gamepad2.dpad_up && touch2.isPressed()) {
+                    //claw.setPosition(50);
+                    wobble.setPower(0);
+                    telemetry.addData("Moving", "wobble goal up");
+                    telemetry.update();
+                }
+                if (gamepad2.dpad_up && !(touch2.isPressed())) {
+                    wobble.setPower(0.48);
+                }
+
+                //Release and Drop Wobble Goal
+                if (gamepad2.dpad_down && touch1.isPressed()) {
+                    //claw.setPosition(50);
+                    wobble.setPower(0);
+                    telemetry.addData("Moving", "wobble goal down");
+                    telemetry.update();
+                }
+                if (gamepad2.dpad_down && !(touch1.isPressed())) {
+                    wobble.setPower(-0.48);
+                }
+                //Suck in ring with right bumper
+                if (gamepad2.right_bumper) {
+                    carousel.setPower(1);
+                    intake.setPower(-0.8);
+                    telemetry.addData("Moving", "intake and carousel");
+                    telemetry.update();
+                }
+
+                else if(gamepad2.left_trigger > 0.9){
+                    carousel.setPower(1);
+                    telemetry.addData("Moving", "carousel");
+                    telemetry.update();
+                }
+
+                else if(gamepad2.right_trigger > 0.9){
+                    intake.setPower(-0.6);
+                    telemetry.addData("Moving", "intake");
+                    telemetry.update();
+                }
+                else if ((gamepad2.right_trigger < 0.9 && gamepad2.left_trigger < 0.9 && gamepad2.right_bumper) == false) {
+                    carousel.setPower(0);
+                    intake.setPower(0);
+                }
+
+
+
+
+                //shooter.setPower(gamepad2.right_trigger);
+                //Shoot with Left Bumper
+                /*if (gamepad2.left_bumper) {
+                    shooter.setPower(-0.75);
+                    telemetry.addData("Moving", "shooter");
+                    telemetry.update();
+                }
+                if (!gamepad2.left_bumper) {
+                    shooter.setPower(0);
+                }
+                //Shoot with x from dot
+                if (gamepad2.x) {
+                    //shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    shooter.setPower(0.85);
+
+                }
+
+
+
+
+
+
+                /*if (!gamepad2.x) {
+                    shooter.setPower(0);
+                }*/
+                /*
+                //Shoot with y for power shots from line
+                if (gamepad2.y) {
+                    shooter.setPower(0.8);
+                    telemetry.addData("Moving", "shooter for power shots");
+                    telemetry.update();
+                }
+                if (!gamepad2.y && !gamepad2.x) {
+                    shooter.setPower(0);
+                }
+                if (gamepad2.dpad_left) {
+                    claw.setPosition(0);
+                }
+                if (gamepad2.dpad_right) {
+                    claw.setPosition(1);
+                }
+                /*
+                if (!gamepad2.dpad_left && !gamepad2.dpad_right) {
+                    claw.setPosition(0.5);
+                }
+                */
+                /*
+                if (gamepad2.a) {
+                    carousel.setPower(-1);
+                    intake.setPower(0.8);
+                    telemetry.addData("Reversing", "intake and carousel");
+                    telemetry.update();
+                }
+
+
+                if (gamepad2.dpad_down && !(touch1.isPressed())) {
+                    wobble.setPower(-0.48);
+                    telemetry.addData("Moving", "touch1");
+                    telemetry.update();
+                } else if ((gamepad2.dpad_down && touch1.isPressed()) || (touch1.isPressed())) {
+                    wobble.setPower(0);
+                }
+                if (gamepad2.dpad_up && !(touch2.isPressed())) {
+                    wobble.setPower(0.48);
+                    telemetry.addData("Moving", "touch2");
+                    telemetry.update();
+                } else if ((gamepad2.dpad_down && touch2.isPressed()) || (touch2.isPressed())) {
+                    wobble.setPower(0);
+                }
+                if(gamepad2.dpad_right) {
+                    claw.setPosition(MIN_POSITION);
+                    telemetry.addData("Claw", claw.getPosition()+ " " + MIN_POSITION);
+                    telemetry.update();
+                }
+                if(gamepad2.dpad_left) {
+                    claw.setPosition(MAX_POSITION);
+                    telemetry.addData("Claw", claw.getPosition() + " " + MAX_POSITION);
+                    telemetry.update();
+                }*/
+
+            }
+        }
+    }}
